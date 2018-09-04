@@ -1,12 +1,13 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { dashboardRoutes } from './dashboard/dashboard.routes';
 
 // components
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { RegisterComponent } from './auth/register/register.component';
 import { LoginComponent } from './auth/login/login.component';
 
+import { dashboardRoutes } from './dashboard/dashboard.routes';
+import { AuthGuardService } from './auth/auth-guard.service';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -14,7 +15,8 @@ const routes: Routes = [
   {
     path: '',
     component: DashboardComponent,
-    children: dashboardRoutes
+    children: dashboardRoutes,
+    canActivate: [ AuthGuardService ]
  },
   { path: '**', redirectTo: '' }
 ];
