@@ -5,11 +5,12 @@ import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { AppState } from '../app.reducer';
 import { ActivarLoadingAction, DesactivarLoadingAction } from './../shared/ui.actions';
-import { SetUserAction } from './auth.actions';
+import { SetUserAction, UnsetUserAction } from './auth.actions';
 
 
 import { AngularFirestore } from 'angularfire2/firestore';
 import * as firebase from 'firebase';
+
 import { map } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 
@@ -24,6 +25,8 @@ import { User } from './user.model';
 export class AuthService {
 
   userSubscription: Subscription = new Subscription();
+  usuario: User;
+
   constructor( private afAuth: AngularFireAuth,
                private router: Router,
                private afDB: AngularFirestore,
@@ -39,8 +42,12 @@ export class AuthService {
 
               const newUser = new User( usuarioObj );
               this.store.dispatch( new SetUserAction( newUser ) );
+
+              this.usuario = newUser;
+
             });
       } else {
+        this.usuario = null;
         this.userSubscription.unsubscribe();
       }
     });
@@ -93,6 +100,8 @@ export class AuthService {
     this.router.navigate(['/login']);
     this.afAuth.auth.signOut();
 
+    this.store.dispatch( new UnsetUserAction() );
+
   }
 
   isAuth() {
@@ -105,5 +114,9 @@ export class AuthService {
                     return fbUser !== null;
                   } )
                 );
+  }
+
+  getUsuario() {
+    return { ...this.usuario };
   }
 }
